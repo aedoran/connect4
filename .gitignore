@@ -1,0 +1,11 @@
+# Binaries
+bin/
+*.exe
+*.log
+
+# Build output
+*.out
+
+# IDE/editor configs
+.vscode/
+.idea/

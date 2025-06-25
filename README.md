@@ -155,3 +155,19 @@ Need help? Open a discussion or ping @maintainers.
 
 **mem0-go** is released under the [MIT License](LICENSE).
 
+
+## Development
+
+A minimal Go HTTP server is provided under `cmd/api`. Run it with:
+
+```bash
+make run
+```
+
+The server exposes a single `GET /healthz` endpoint that returns `{"status":"ok"}`.
+
+Run tests with:
+
+```bash
+make test
+```
