@@ -117,10 +117,10 @@ mem0-go/
 
 ```bash
 # Run unit tests
-$ go test ./...
+$ make test
 
 # Lint & vet
-$ golangci-lint run
+$ make lint
 
 # Launch API only (uses local services already running via compose)
 $ make dev
@@ -161,13 +161,10 @@ Need help? Open a discussion or ping @maintainers.
 A minimal Go HTTP server is provided under `cmd/api`. Run it with:
 
 ```bash
-make run
+make dev
 ```
 
 The server exposes a single `GET /healthz` endpoint that returns `{"status":"ok"}`.
 
-Run tests with:
-
-```bash
-make test
-```
+Run tests with `make test` and lint with `make lint`. Build a Docker image
+using `make docker-build`.
