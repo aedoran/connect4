@@ -1,0 +1,161 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: mem0-go-api:dev
+    environment:
+      APP_PORT: ${APP_PORT:-8080}
+      POSTGRES_USER: ${POSTGRES_USER:-mem0}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mem0pass}
+      POSTGRES_DB: ${POSTGRES_DB:-mem0}
+      NEO4J_USER: ${NEO4J_USER:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-neo4jtest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  ui:
+    image: nginx:alpine
+    volumes:
+      - ../ui:/usr/share/nginx/html:ro
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mem0}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mem0pass}
+      POSTGRES_DB: ${POSTGRES_DB:-mem0}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-mem0}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  qdrant:
+    image: qdrant/qdrant:v1.9.1
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:6333/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-neo4jtest}"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "$${NEO4J_USER:-neo4j}", "-p", "$${NEO4J_PASSWORD:-neo4jtest}", "RETURN 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.92.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "13133:13133"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:13133/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  loki:
+    image: grafana/loki:2.9.6
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  neo4j_data:
+  prometheus_data:
+  loki_data:
+  grafana_data:

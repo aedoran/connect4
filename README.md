@@ -1,7 +1,7 @@
 # mem0-go
 
 > **mem0-go** is an open‑source, fully containerized re‑imagining of the core functionality of [mem0.ai](https://mem0.ai) built entirely in Go.
-> It combines **Qdrant** for vector search, **Neo4j** for graph relationships, **PostgreSQL** for relational data, and a modern **React + Tailwind** UI—everything runnable with a single `docker compose up`.
+> It combines **Qdrant** for vector search, **Neo4j** for graph relationships, **PostgreSQL** for relational data, and a modern **React + Tailwind** UI—everything runnable with a single `docker compose -f docker/compose.yaml up`.
 
 ---
 
@@ -62,7 +62,7 @@ $ cd mem0-go
 $ cp .env.example .env
 
 # 3. Fire up the whole stack 🐳
-$ docker compose up -d --build
+$ docker compose -f docker/compose.yaml up -d --build
 
 # 4. Explore
 UI          → http://localhost:3000  (Vite dev, hot‑reload)
