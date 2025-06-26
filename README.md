@@ -88,6 +88,7 @@ All configuration is environment‑driven. Key variables:
 | `QDRANT_PORT`        | `6333`      | Qdrant HTTP port                  |
 | `NEO4J_USER`         | `neo4j`     | Neo4j user                        |
 | `NEO4J_PASSWORD`     | `neo4jtest` | Neo4j password                    |
+| `REDIS_ADDR`         | `localhost:6379` | Redis endpoint for workers |
 | `MEM0_EMBEDDING_KEY` | *‑empty‑*   | OpenAI / LM Studio key (optional) |
 
 Create additional overrides in `docker/.env.local` which is `.gitignore`d.
@@ -124,6 +125,8 @@ $ make lint
 
 # Launch API only (uses local services already running via compose)
 $ make dev
+# Run workers
+$ go run ./cmd/worker
 ```
 
 Front‑end hot‑reload:
