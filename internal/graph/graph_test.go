@@ -8,11 +8,13 @@ import (
 
 func TestCreateAndQuery(t *testing.T) {
 	// stub dialer to avoid real network
-	dialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
-		c1, c2 := net.Pipe()
-		go c1.Close()
-		return c2, nil
-	}
+        dialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
+                c1, c2 := net.Pipe()
+                go func() {
+                        _ = c1.Close()
+                }()
+                return c2, nil
+        }
 
 	cfg := LoadConfig()
 	g, err := Connect(context.Background(), cfg)

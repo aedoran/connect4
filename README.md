@@ -64,7 +64,10 @@ $ cp .env.example .env
 # 3. Fire up the whole stack 🐳
 $ docker compose -f docker/compose.yaml up -d --build
 
-# 4. Explore
+# 4. In another shell start the UI dev server
+$ cd ui && pnpm i && pnpm dev
+
+# 5. Explore
 UI          → http://localhost:3000  (Vite dev, hot‑reload)
 GraphQL UI  → http://localhost:8080/graphql
 Qdrant UI   → http://localhost:6333
