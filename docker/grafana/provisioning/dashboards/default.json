@@ -1,0 +1,21 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "type": "graph",
+      "title": "Request Duration",
+      "targets": [
+        {
+          "expr": "request_duration_seconds",
+          "legendFormat": "duration"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 37,
+  "title": "mem0-go",
+  "version": 1
+}

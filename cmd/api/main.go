@@ -11,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 
+	"mem0-go/internal/observability"
+
 	"mem0-go/internal/config"
 	"mem0-go/internal/docs"
 	"mem0-go/internal/graphql"
@@ -30,6 +32,8 @@ func setupApp(logger *slog.Logger) *fiber.App {
 	})
 
 	app.Use(recover.New())
+	// tracing and metrics middleware
+	app.Use(observability.Middleware("api"))
 	app.Use(func(c *fiber.Ctx) error {
 		start := time.Now()
 		err := c.Next()
@@ -61,6 +65,8 @@ func main() {
 	cfg := config.Load()
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
+	shutdown := observability.Start(context.Background(), "api")
+
 	app := setupApp(logger)
 	addr := ":" + cfg.HTTPPort
 
@@ -87,4 +93,6 @@ func main() {
 	if err := app.ShutdownWithContext(shutdownCtx); err != nil {
 		logger.Error("graceful shutdown failed", "err", err)
 	}
+
+	_ = shutdown(context.Background())
 }
