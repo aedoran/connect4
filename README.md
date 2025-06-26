@@ -14,7 +14,7 @@
 | **Graph Memory**     | Neo4j stores entity & context graphs, enabling rich traversal queries.                               |
 | **Relational Store** | PostgreSQL persists structured data, events & auth.                                                  |
 | **Modern UI**        | React 18, Vite, Tailwind CSS, shadcn/ui components, Zustand state.                                   |
-| **Observability**    | OpenTelemetry tracing, Prometheus metrics, Loki logs—pre‑wired.                                      |
+| **Observability**    | OpenTelemetry tracing, Prometheus metrics, Loki logs—pre‑wired with a default Grafana dashboard. |
 | **Container‑first**  | One‑shot local stack via Docker Compose; production Helm charts included.                            |
 
 ---

@@ -134,12 +134,30 @@ services:
       retries: 3
       start_period: 10s
 
+  promtail:
+    image: grafana/promtail:2.9.6
+    command: -config.file=/etc/promtail-config.yaml
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail-config.yaml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      loki:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9080/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
   grafana:
     image: grafana/grafana:10.4.2
     ports:
       - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       prometheus:
         condition: service_healthy
