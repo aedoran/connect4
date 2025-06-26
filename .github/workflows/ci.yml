@@ -11,12 +11,10 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - name: Run Lint
+      - name: Run CI
         run: |
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-          make lint
-      - name: Run Tests
-        run: make test
+          make ci
       - name: Dev
         run: timeout 5s make dev || true
       - name: Docker Build

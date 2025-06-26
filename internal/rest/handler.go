@@ -78,7 +78,7 @@ func Register(app *fiber.App, svc *memory.Service) {
 	// @Failure 400 {object} map[string]string
 	// @Failure 500 {object} map[string]string
 	// @Router /api/v1/memories/{id} [get]
-	app.Get("/api/v1/memories/:id", func(c *fiber.Ctx) error {
+	app.Get("/api/v1/memories/", func(c *fiber.Ctx) error {
 		parts := strings.Split(c.Path(), "/")
 		if len(parts) == 0 {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
