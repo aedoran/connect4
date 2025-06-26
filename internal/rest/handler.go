@@ -2,6 +2,8 @@ package rest
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -65,5 +67,31 @@ func Register(app *fiber.App, svc *memory.Service) {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 		return c.JSON(fiber.Map{"results": res})
+	})
+
+	// @Summary Get memory
+	// @Description Retrieve memory by ID
+	// @Tags memories
+	// @Produce json
+	// @Param id path int true "Memory ID"
+	// @Success 200 {object} db.Memory
+	// @Failure 400 {object} map[string]string
+	// @Failure 500 {object} map[string]string
+	// @Router /api/v1/memories/{id} [get]
+	app.Get("/api/v1/memories/:id", func(c *fiber.Ctx) error {
+		parts := strings.Split(c.Path(), "/")
+		if len(parts) == 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
+		}
+		idStr := parts[len(parts)-1]
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid id"})
+		}
+		m, err := svc.GetMemory(c.Context(), id)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		}
+		return c.JSON(m)
 	})
 }

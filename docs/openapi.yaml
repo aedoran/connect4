@@ -64,3 +64,15 @@ paths:
       responses:
         '200':
           description: search results
+  /api/v1/memories/{id}:
+    get:
+      summary: Get memory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: memory record
