@@ -16,6 +16,7 @@ import (
 	"mem0-go/internal/graphql"
 	"mem0-go/internal/inmem"
 	"mem0-go/internal/memory"
+	"mem0-go/internal/rest"
 )
 
 func setupApp(logger *slog.Logger) *fiber.App {
@@ -50,6 +51,7 @@ func setupApp(logger *slog.Logger) *fiber.App {
 	g := inmem.NewGraph()
 	svc := memory.NewService(repo, vec, g)
 	graphql.Register(app, svc)
+	rest.Register(app, svc)
 	docs.Register(app)
 
 	return app

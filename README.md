@@ -164,7 +164,7 @@ A minimal Fiber web server is provided under `cmd/api`. Run it with:
 make dev
 ```
 
-The server exposes a single `GET /healthz` endpoint that returns `{"status":"ok"}`. It includes structured request logging and shuts down gracefully when interrupted.
+The server exposes `GET /healthz` plus GraphQL at `/graphql` and REST endpoints under `/api/v1`. It includes structured request logging and shuts down gracefully when interrupted.
 
 Run tests with `make test` and lint with `make lint`. Build a Docker image
 using `make docker-build`.
