@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: mem0-go API
+  version: 0.1.0
+paths:
+  /graphql:
+    post:
+      summary: GraphQL endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+      responses:
+        '200':
+          description: GraphQL response
+  /healthz:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: ok
