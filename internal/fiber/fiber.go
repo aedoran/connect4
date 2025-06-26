@@ -47,6 +47,22 @@ func (a *App) Get(path string, h Handler) {
 	})
 }
 
+// Post registers a POST handler for the given path.
+func (a *App) Post(path string, h Handler) {
+	a.mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+		chain := append([]Handler{}, a.middleware...)
+		chain = append(chain, h)
+		ctx := &Ctx{Request: r, ResponseWriter: w, chain: chain}
+		if err := ctx.Next(); err != nil && a.config.ErrorHandler != nil {
+			a.config.ErrorHandler(ctx, err)
+		}
+	})
+}
+
 // Listen starts the HTTP server.
 func (a *App) Listen(addr string) error {
 	a.server = &http.Server{Addr: addr, Handler: a.mux}
@@ -72,6 +88,8 @@ func (a *App) Test(req *http.Request, _ int) (*http.Response, error) {
 var ErrServerClosed = http.ErrServerClosed
 
 const StatusInternalServerError = http.StatusInternalServerError
+const StatusBadRequest = http.StatusBadRequest
+const StatusMethodNotAllowed = http.StatusMethodNotAllowed
 
 // Ctx represents the request context passed to handlers.
 type Ctx struct {
@@ -107,6 +125,31 @@ func (c *Ctx) JSON(v interface{}) error {
 	c.ResponseWriter.WriteHeader(c.statusCode)
 	return json.NewEncoder(c.ResponseWriter).Encode(v)
 }
+
+// Send writes raw bytes as the response body.
+func (c *Ctx) Send(b []byte) error {
+	if c.statusCode == 0 {
+		c.statusCode = http.StatusOK
+	}
+	c.ResponseWriter.WriteHeader(c.statusCode)
+	_, err := c.ResponseWriter.Write(b)
+	return err
+}
+
+// SendString writes a plain text response.
+func (c *Ctx) SendString(s string) error {
+	c.ResponseWriter.Header().Set("Content-Type", "text/plain")
+	return c.Send([]byte(s))
+}
+
+// Type sets the Content-Type header.
+func (c *Ctx) Type(t string) *Ctx {
+	c.ResponseWriter.Header().Set("Content-Type", t)
+	return c
+}
+
+// Context returns the request context.
+func (c *Ctx) Context() context.Context { return c.Request.Context() }
 
 // Method returns the HTTP method.
 func (c *Ctx) Method() string { return c.Request.Method }
