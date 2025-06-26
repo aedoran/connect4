@@ -1,4 +1,5 @@
 import { useCounterStore } from '../store';
+import { SearchMemories } from '../components/SearchMemories';
 
 export function Home() {
   const count = useCounterStore((s) => s.count);
@@ -9,6 +10,9 @@ export function Home() {
       <button className="px-4 py-2 bg-primary text-primary-foreground rounded" onClick={increment}>
         Count is {count}
       </button>
+      <div className="mt-6">
+        <SearchMemories />
+      </div>
     </div>
   );
 }

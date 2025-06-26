@@ -35,6 +35,11 @@ func NewService(repo db.Repository, v vectorStore, g graphStore) *Service {
 	return &Service{repo: repo, vector: v, graph: g}
 }
 
+// GetMemory retrieves a memory record by ID.
+func (s *Service) GetMemory(ctx context.Context, id int64) (db.Memory, error) {
+	return s.repo.GetMemory(ctx, id)
+}
+
 // StoreMemory persists the text and embedding then indexes it in Qdrant.
 func (s *Service) StoreMemory(ctx context.Context, userID int64, content string, emb []float32) (int64, error) {
 	id, err := s.repo.CreateMemory(ctx, userID, content)

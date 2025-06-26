@@ -36,6 +36,13 @@ func (r *Repo) AddEmbedding(ctx context.Context, memoryID int64, vec []float32) 
 	return nil
 }
 
+func (r *Repo) GetMemory(ctx context.Context, id int64) (db.Memory, error) {
+	if int(id) <= 0 || int(id) > len(r.memories) {
+		return db.Memory{}, fmt.Errorf("not found")
+	}
+	return db.Memory{ID: id, UserID: 1, Content: r.memories[id-1]}, nil
+}
+
 // Vector implements vectorStore using memory.
 type Vector struct{ points []vector.Point }
 

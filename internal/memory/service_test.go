@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"mem0-go/internal/db"
 	"mem0-go/internal/graph"
 	"mem0-go/internal/vector"
 )
@@ -12,6 +13,7 @@ import (
 type stubRepo struct {
 	users      []string
 	memories   []string
+	memoryIDs  []int64
 	embeddings [][]float32
 	createErr  error
 	embedErr   error
@@ -27,7 +29,9 @@ func (s *stubRepo) CreateMemory(ctx context.Context, userID int64, content strin
 		return 0, s.createErr
 	}
 	s.memories = append(s.memories, content)
-	return int64(len(s.memories)), nil
+	id := int64(len(s.memories))
+	s.memoryIDs = append(s.memoryIDs, id)
+	return id, nil
 }
 
 func (s *stubRepo) AddEmbedding(ctx context.Context, memoryID int64, vec []float32) error {
@@ -36,6 +40,13 @@ func (s *stubRepo) AddEmbedding(ctx context.Context, memoryID int64, vec []float
 	}
 	s.embeddings = append(s.embeddings, vec)
 	return nil
+}
+
+func (s *stubRepo) GetMemory(ctx context.Context, id int64) (db.Memory, error) {
+	if int(id) <= 0 || int(id) > len(s.memories) {
+		return db.Memory{}, fmt.Errorf("not found")
+	}
+	return db.Memory{ID: id, UserID: 1, Content: s.memories[id-1]}, nil
 }
 
 type stubVector struct {
@@ -179,5 +190,20 @@ func TestSearchError(t *testing.T) {
 	svc := NewService(repo, vec, g)
 	if _, err := svc.Search(context.Background(), nil, 1); err == nil {
 		t.Fatalf("expected query error")
+	}
+}
+
+func TestGetMemory(t *testing.T) {
+	repo := &stubRepo{}
+	vec := &stubVector{}
+	g := &stubGraph{}
+	svc := NewService(repo, vec, g)
+	id, _ := svc.StoreMemory(context.Background(), 1, "hello", []float32{1})
+	m, err := svc.GetMemory(context.Background(), id)
+	if err != nil {
+		t.Fatalf("get memory: %v", err)
+	}
+	if m.Content != "hello" || m.ID != id {
+		t.Fatalf("unexpected memory: %+v", m)
 	}
 }
