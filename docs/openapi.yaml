@@ -24,3 +24,43 @@ paths:
       responses:
         '200':
           description: ok
+  /api/v1/memories:
+    post:
+      summary: Create memory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userID:
+                  type: integer
+                content:
+                  type: string
+                vector:
+                  type: array
+                  items:
+                    type: number
+      responses:
+        '200':
+          description: memory ID
+  /api/v1/memories/search:
+    post:
+      summary: Search memories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vector:
+                  type: array
+                  items:
+                    type: number
+                limit:
+                  type: integer
+      responses:
+        '200':
+          description: search results

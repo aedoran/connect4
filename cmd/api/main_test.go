@@ -53,6 +53,33 @@ func TestGraphQLUpsertAndSearch(t *testing.T) {
 	}
 }
 
+func TestRESTCreateAndSearch(t *testing.T) {
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	app := setupApp(logger)
+
+	body := `{"userID":1,"content":"hi","vector":[1,2]}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/memories", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := app.Test(req, -1)
+	if err != nil {
+		t.Fatalf("post: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status %d", resp.StatusCode)
+	}
+
+	body = `{"vector":[1,2],"limit":1}`
+	req = httptest.NewRequest(http.MethodPost, "/api/v1/memories/search", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err = app.Test(req, -1)
+	if err != nil {
+		t.Fatalf("search: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status %d", resp.StatusCode)
+	}
+}
+
 func TestOpenAPIDocs(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	app := setupApp(logger)
