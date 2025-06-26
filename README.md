@@ -158,13 +158,13 @@ Need help? Open a discussion or ping @maintainers.
 
 ## Development
 
-A minimal Go HTTP server is provided under `cmd/api`. Run it with:
+A minimal Fiber web server is provided under `cmd/api`. Run it with:
 
 ```bash
 make dev
 ```
 
-The server exposes a single `GET /healthz` endpoint that returns `{"status":"ok"}`.
+The server exposes a single `GET /healthz` endpoint that returns `{"status":"ok"}`. It includes structured request logging and shuts down gracefully when interrupted.
 
 Run tests with `make test` and lint with `make lint`. Build a Docker image
 using `make docker-build`.
