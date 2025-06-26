@@ -93,6 +93,7 @@ All configuration is environment‑driven. Key variables:
 | `NEO4J_PASSWORD`     | `neo4jtest` | Neo4j password                    |
 | `REDIS_ADDR`         | `localhost:6379` | Redis endpoint for workers |
 | `MEM0_EMBEDDING_KEY` | *‑empty‑*   | OpenAI / LM Studio key (optional) |
+| `VITE_API_URL`       | `http://localhost:8080` | Base URL for the API |
 
 Create additional overrides in `docker/.env.local` which is `.gitignore`d.
 

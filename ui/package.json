@@ -14,7 +14,9 @@
     "react-router-dom": "^6.22.3",
     "zustand": "^4.4.7",
     "class-variance-authority": "^0.7.0",
-    "tailwind-merge": "^1.14.0"
+    "tailwind-merge": "^1.14.0",
+    "@apollo/client": "^3.9.10",
+    "graphql": "^16.8.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
